@@ -1,0 +1,30 @@
+html, body { 
+    height: 100%; 
+    width: 100%;
+    margin: 0px;
+    overflow: hidden;
+}
+
+.map {
+    cursor: move;
+    position: relative;
+}
+
+.hud {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    pointer-events: none
+}
+
+button {
+    pointer-events: all;
+}
+
+#replay-select {
+    width: 60%;
+    height: 60%;
+    background-color: white;
+}

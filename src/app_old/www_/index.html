@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="index.css">
+        <link rel="stylesheet" href="common.css">
+
+        <script src="index.js"></script>
+        <script src="jquery.js"></script>
+        <script src="eel.js"></script>
+    </head>
+
+    <body>
+        <div id="initialize-screen" class="hud fill-parent">
+            <img class="map" src="images/provinces.bmp"></img>
+
+            <div class="hud center-container fill-parent">
+                <div id="replay-select">
+                    <script>
+                        async function load_replays() {
+                            let replays = await eel.get_replay_list()()
+                            let replay_element = $("#replay-select")
+                            
+                            replays.forEach(replay => {
+                                replay_element.append(`
+                                    <button onclick='replay_selected("${replay}")'>${replay}</button>
+                                `)
+                            });
+                        }
+    
+                        load_replays()
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <div class="hud fill-parent">
+            <button>Hello world!</button>
+        </div>
+    </body>
+</html>
