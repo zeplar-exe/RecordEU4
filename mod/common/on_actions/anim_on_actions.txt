@@ -1,0 +1,33 @@
+# https://eu4.paradoxwikis.com/On_Actions
+
+on_startup = {
+    log = "ANIMATED_REPLAY on_startup||[Root.GetTag]"
+
+    every_owned_province = {
+        log = "ANIMATED_REPLAY on_startup_province||[This.GetCapitalName]||[Prev.GetTag]"
+    }
+}
+
+on_siege_won_country = {
+    log = "ANIMATED_REPLAY on_siege_won_country||[Root.GetTag]||[From.GetCapitalName]"
+}
+
+on_annexed = {
+    log = "ANIMATED_REPLAY on_annexed||[Root.GetTag]||[From.GetTag]"
+}
+
+on_abandon_colony = {
+    log = "ANIMATED_REPLAY on_abandon_colony||[Root.GetCapitalName]||[From.GetTag]"
+}
+
+on_province_owner_change = {
+    log = "ANIMATED_REPLAY on_province_owner_change||[Root.GetCapitalName]||[Root.Owner.GetTag]||[From.GetTag]"
+}
+
+on_create_vassal = {
+    log = "ANIMATED_REPLAY on_create_vassal||[Root.GetTag]||[From.GetTag]"
+}
+
+on_create_client_state = {
+    log = "ANIMATED_REPLAY on_create_client_state||[This.GetTag]||[From.GetTag]"
+}
