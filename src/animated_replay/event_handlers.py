@@ -1,65 +1,76 @@
 from datetime import date as datetime_date
 
-from animation_data import AnimationData
-from animation_event import AnimationEventType
+from animation_data import *
+from animation_event import *
 
 def on_startup(date: datetime_date, anim_data: AnimationData, args: list):
-    setup_nation = args[0]
+    setup_country_tag = args[0]
     
     anim_data.game_start_date = date
 
-def on_startup_province(date: datetime_date, anim_data: AnimationData, args: list):
-    province = args[0]
-    country = args[1]
+def startup_province_ownership(date: datetime_date, anim_data: AnimationData, args: list):
+    province_name = args[0]
+    country_tag = args[1]
 
-    inner = anim_data.initial_province_ownership.get(country)
+    province = anim_data.initial_provinces.get(province_name)
 
-    if inner is None:
-        anim_data.initial_province_ownership[country] = list([ province ])
-    else:
-        inner.append(province)
+    if province is None:
+        province = anim_data.initial_provinces[province_name] = Province(province_name)
+
+    province.owner = country_tag
+
+def startup_province_occupation(date: datetime_date, anim_data: AnimationData, args: list):
+    province_name = args[0]
+    country_tag = args[1]
+
+    province = anim_data.initial_provinces.get(province_name)
+
+    if province is None:
+        province = anim_data.initial_provinces[province_name] = Province(province_name)
+
+    province.occupier = country_tag
 
 def on_siege_won_country(date: datetime_date, anim_data: AnimationData, args: list):
-    winner = args[0]
-    province = args[1]
+    winner_tag = args[0]
+    province_name = args[1]
 
     anim_data.events.append({
         "type": AnimationEventType.province_occupied,
         "date": date,
-        "province": province,
-        "controller": winner
+        "province": province_name,
+        "occupier": winner_tag
     })
 
 def on_province_owner_change(date: datetime_date, anim_data: AnimationData, args: list):
-    province = args[0]
-    new_owner = args[1]
-    old_owner = args[2]
+    province_name = args[0]
+    new_owner_tag = args[1]
+    old_owner_tag = args[2]
 
     anim_data.events.append({
         "type": AnimationEventType.province_owner_changed,
         "date": date,
-        "province": province,
-        "new_owner": new_owner,
-        "old_owner": old_owner
+        "province": province_name,
+        "new_owner": new_owner_tag,
+        "old_owner": old_owner_tag
     })
 
 def on_province_siege_progress(date: datetime_date, anim_data: AnimationData, args: list):
-    province = args[0]
-    sieger = args[1]
+    province_name = args[0]
+    sieger_tag = args[1]
 
     anim_data.events.append({
         "type": AnimationEventType.siege_progress,
         "date": date,
-        "province": province,
-        "sieger": sieger
+        "province": province_name,
+        "sieger": sieger_tag
     })
 
 def on_abandon_colony(date: datetime_date, anim_data: AnimationData, args: list):
-    province = args[0]
-    country = args[1]
+    province_name = args[0]
+    country_tag = args[1]
 
     anim_data.events.append({
         "type": AnimationEventType.province_abandoned,
         "date": date,
-        "province": province
+        "province": province_name
     })
