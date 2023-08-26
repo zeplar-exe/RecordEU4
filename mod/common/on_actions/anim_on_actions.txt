@@ -3,13 +3,32 @@
 on_startup = {
     log = "ANIMATED_REPLAY on_startup||[Root.GetTag]"
 
+    if = {
+        limit = {
+            NOT = { has_global_flag = read_prov_id }
+        }
+
+        set_prov_vars = yes
+
+        every_province = {
+            log = "ANIMATED_REPLAY startup_province||[This.prov_id.GetValue]||[This.GetName]"
+        }
+
+        set_global_flag = read_prov_id
+    }
+# In all, the issue is that the definition.csv file is absolutely fucked and horribly inconsistent. Thus, the only remaining solution is to use province IDs. How, you ask? I don't fucking know, and nobody else has ever done this in the history of the fucking world I guess.
     every_owned_province = {
-        log = "ANIMATED_REPLAY on_startup_province||[This.GetCapitalName]||[Prev.GetTag]"
+        log = "ANIMATED_REPLAY startup_province_ownership||[This.prov_id.GetValue]||[Prev.GetTag]"
+    }
+
+    country_event = {
+        id = anim_util_events.1
+        days = 1
     }
 }
 
 on_siege_won_country = {
-    log = "ANIMATED_REPLAY on_siege_won_country||[Root.GetTag]||[From.GetCapitalName]"
+    log = "ANIMATED_REPLAY on_siege_won_country||[Root.GetTag]||[From.prov_id.GetValue]"
 }
 
 on_annexed = {
@@ -17,11 +36,11 @@ on_annexed = {
 }
 
 on_abandon_colony = {
-    log = "ANIMATED_REPLAY on_abandon_colony||[Root.GetCapitalName]||[From.GetTag]"
+    log = "ANIMATED_REPLAY on_abandon_colony||[Root.GetName]||[This.prov_id.GetValue]"
 }
 
 on_province_owner_change = {
-    log = "ANIMATED_REPLAY on_province_owner_change||[Root.GetCapitalName]||[Root.Owner.GetTag]||[From.GetTag]"
+    log = "ANIMATED_REPLAY on_province_owner_change||[Root.prov_id.GetValue]||[Root.Owner.GetTag]||[From.GetTag]"
 }
 
 on_create_vassal = {

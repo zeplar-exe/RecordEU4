@@ -2,7 +2,7 @@
   "name": "app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
@@ -10,6 +10,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^26.0.0"
+    "electron": "^22.0.0"
+  },
+  "dependencies": {
+    "@jimp/bmp": "^0.22.10",
+    "appdata-path": "^1.0.0",
+    "jimp": "^0.22.10",
+    "node-csv": "^0.1.2"
   }
 }

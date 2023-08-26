@@ -5,6 +5,10 @@ html, body {
     overflow: hidden;
 }
 
+body {
+    display: flex;
+}
+
 .map {
     cursor: move;
     position: relative;
@@ -23,8 +27,16 @@ button {
     pointer-events: all;
 }
 
-#replay-select {
-    width: 60%;
-    height: 60%;
-    background-color: white;
+#replay-list-view {
+    width: 25%;
+    border-right: 1px solid black;
+}
+
+#map-view {
+    width: 75%;
+    border-left: 1px solid black;
+}
+
+#replay-list {
+    list-style: none;
 }

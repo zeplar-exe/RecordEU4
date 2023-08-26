@@ -109,7 +109,7 @@ while True:
         os.makedirs(replay_dir, exist_ok=True)
 
         data_file_path = os.path.join(replay_dir, "data.json")
-        data_output_file = open(data_file_path, "w+")
+        data_output_file = open(data_file_path, "w+", encoding="ansi")
 
         log(f"Created JSON output as '{data_file_path}'.")
 

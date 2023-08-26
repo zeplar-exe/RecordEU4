@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <title>EU4 Animated Replay</title>
+
+        <link rel="stylesheet" href="index.css">
+        <link rel="stylesheet" href="common.css">
+    </head>
+
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+    <script src="index.js"></script>
+    <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+    <script>
+        const { ipcRenderer } = require("electron");
+    </script>
+
+    <body>
+        <div id="replay-list-view">
+            <ul id="replay-list">
+                <script>
+                    loadReplayList()
+                </script>
+            </ul>
+        </div>
+
+
+
+        <div id="map-view">
+            <canvas id="map-canvas"></canvas>
+        </div>
+
+        <script>
+            let mapCanvas = $("#map-canvas")[0]
+
+            mapPanzoom = Panzoom(mapCanvas, {
+                maxScale: 4,
+                bounds: true,
+                boundsPadding: 1
+            });
+
+            mapCanvas.parentElement.addEventListener('wheel', mapPanzoom.zoomWithWheel)
+        </script>
+    </body>
+</html>

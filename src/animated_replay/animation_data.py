@@ -10,7 +10,8 @@ class AnimationData:
 
 @dataclass
 class Province:
-    def __init__(self, name):
+    def __init__(self, id, name):
+        self.id: str = id
         self.name: str = name
         self.owner: str = None
         self.occupier: str = None

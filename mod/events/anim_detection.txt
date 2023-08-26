@@ -24,6 +24,6 @@ province_event = {
             }
         }
 
-        log = "ANIMATED_REPLAY on_province_siege_progress||[Root.GetCapitalName]||[This.GetTag]"
+        log = "ANIMATED_REPLAY on_province_siege_progress||[Root.prov_id.GetValue]||[This.GetTag]"
     }
 }
