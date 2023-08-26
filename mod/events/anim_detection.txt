@@ -24,6 +24,33 @@ province_event = {
             }
         }
 
-        log = "ANIMATED_REPLAY on_province_siege_progress||[Root.prov_id.GetValue]||[This.GetTag]"
+        export_to_variable = {
+            which = anim_garrison
+            value = trigger_value:garrison
+        }
+
+        log = "ANIMATED_REPLAY on_province_siege_progress||[Root.prov_id.GetValue]||[This.anim_garrison.GetValue]||[This.GetTag]"
+    }
+}
+
+# Currently at war?
+country_event = {
+    id = anim_detection_events.1
+    hidden = yes
+
+    trigger = {
+        is_at_war = yes
+    }
+
+    mean_time_to_happen = {
+        days = 1
+    }
+
+    option = {
+        ai_chance = 1
+    }
+
+    every_enemy_country = {
+        log = "ANIMATED_REPLAY on_war_progress||[Root.GetTag]||[This.GetTag]"
     }
 }

@@ -17,8 +17,15 @@ on_startup = {
         set_global_flag = read_prov_id
     }
 # In all, the issue is that the definition.csv file is absolutely fucked and horribly inconsistent. Thus, the only remaining solution is to use province IDs. How, you ask? I don't fucking know, and nobody else has ever done this in the history of the fucking world I guess.
+# Update: we got it working, fuck this pile of shit.
     every_owned_province = {
         log = "ANIMATED_REPLAY startup_province_ownership||[This.prov_id.GetValue]||[Prev.GetTag]"
+
+        if = {
+            limit = { NOT = { controls = This } }
+
+            log = "ANIMATED_REPLAY startup_province_ownership||[This.prov_id.GetValue]||[Prev.GetTag]"
+        }
     }
 
     country_event = {
@@ -29,10 +36,6 @@ on_startup = {
 
 on_siege_won_country = {
     log = "ANIMATED_REPLAY on_siege_won_country||[Root.GetTag]||[From.prov_id.GetValue]"
-}
-
-on_annexed = {
-    log = "ANIMATED_REPLAY on_annexed||[Root.GetTag]||[From.GetTag]"
 }
 
 on_abandon_colony = {
@@ -49,4 +52,20 @@ on_create_vassal = {
 
 on_create_client_state = {
     log = "ANIMATED_REPLAY on_create_client_state||[This.GetTag]||[From.GetTag]"
+}
+
+on_dependency_gained = {
+    log = "ANIMATED_REPLAY on_dependency_gained||[Root.GetTag]||[From.GetTag]
+}
+
+on_dependency_lost = {
+    log = "ANIMATED_REPLAY on_dependency_lost||[Root.GetTag]||[From.GetTag]
+}
+
+on_war_won = {
+    log = "ANIMATED_REPLAY on_war_won||[Root.GetTag]||[From.GetTag]"
+}
+
+on_war_lost = {
+    log = "ANIMATED_REPLAY on_war_lost||[Root.GetTag]||[From.GetTag]"
 }

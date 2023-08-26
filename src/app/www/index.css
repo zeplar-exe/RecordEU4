@@ -9,12 +9,31 @@ body {
     display: flex;
 }
 
-.map {
-    cursor: move;
-    position: relative;
+
+#replay-list-view {
+    width: 25%;
+    border-right: 1px solid black;
 }
 
-.hud {
+#replay-list {
+    list-style: none;
+}
+
+
+#map-view {
+    width: 75%;
+    border-left: 1px solid black;
+}
+
+#map-canvas {
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+
+#hud {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -23,20 +42,6 @@ body {
     pointer-events: none
 }
 
-button {
+#hud > button {
     pointer-events: all;
-}
-
-#replay-list-view {
-    width: 25%;
-    border-right: 1px solid black;
-}
-
-#map-view {
-    width: 75%;
-    border-left: 1px solid black;
-}
-
-#replay-list {
-    list-style: none;
 }

@@ -8,6 +8,8 @@ const Jimp = require('jimp');
 let appDataPath = getAppDataPath("RecordEU4")
 let replaysDir = path.join(appDataPath, "replays")
 
+let currentReplay = undefined
+
 ipcMain.handle("replays.getReplayList", async (event, ...args) => {
     return await readdir(replaysDir)
 })
@@ -22,6 +24,8 @@ ipcMain.handle("replays.getReplayBitmap", async (event, ...args) => {
     let dataJson = JSON.parse((await readFile(path.join(replayDir, "data.json"))).toString())
     let provinceBitmap = await Jimp.read(path.join(replayDir, "map/provinces.bmp"))
     let definitionCsv = csvParser.parse(await readFile(path.join(replayDir, "map/definition.csv")))
+
+    currentReplay = dataJson
     
     let definitions = new Map()
 
@@ -53,7 +57,7 @@ ipcMain.handle("replays.getReplayBitmap", async (event, ...args) => {
             continue
 
         let province_id = definition["id"]
-        let province = dataJson["initial_provinces"][province_id]
+        let province = currentReplay["initial_provinces"][province_id]
 
         if (!province)
             continue
@@ -66,7 +70,7 @@ ipcMain.handle("replays.getReplayBitmap", async (event, ...args) => {
             continue
         }
 
-        let countryColor = dataJson["countries"][country]["color"]
+        let countryColor = currentReplay["countries"][country]["color"]
 
         provinceBitmapArray[i] = countryColor[0]
         provinceBitmapArray[i+1] = countryColor[1]
@@ -75,4 +79,10 @@ ipcMain.handle("replays.getReplayBitmap", async (event, ...args) => {
     }
 
     return { bitmap: provinceBitmapArray, width: provinceBitmap.bitmap.width, height: provinceBitmap.bitmap.height }
+})
+
+ipcMain.handle("replays.getEventsOnDate", async (event, ...args) => {
+    let date = args[0]
+
+    return currentReplay["events"][step]
 })
