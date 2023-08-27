@@ -78,3 +78,36 @@ def on_abandon_colony(date: datetime_date, recording_data: RecordingData, args: 
         "date": date,
         "province": province_id
     })
+
+def on_dependency_gained(date: datetime_date, recording_data: RecordingData, args: list):
+    overlord = args[0]
+    subject = args[1]
+
+    recording_data.events.append({
+        "type": RecordingEventType.dependency_gained,
+        "date": date,
+        "overlord": overlord,
+        "subject": subject
+    })
+
+def on_dependency_lost(date: datetime_date, recording_data: RecordingData, args: list):
+    overlord = args[0]
+    subject = args[1]
+
+    recording_data.events.append({
+        "type": RecordingEventType.dependency_lost,
+        "date": date,
+        "overlord": overlord,
+        "subject": subject
+    })
+
+def on_war_won(date: datetime_date, recording_data: RecordingData, args: list):
+    winner = args[0]
+    loser = args[1]
+
+    recording_data.events.append({
+        "type": RecordingEventType.war_won,
+        "date": date,
+        "winner": winner,
+        "loser": loser
+    })

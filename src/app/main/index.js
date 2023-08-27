@@ -1,5 +1,4 @@
-const { app, BrowserWindow, contextBridge, ipcRenderer } = require('electron')
-const path = require("path")
+import { app, BrowserWindow } from "electron";
 
 let win
 

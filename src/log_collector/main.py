@@ -93,6 +93,11 @@ while True:
     for line in eu4_log_file.readlines():
         if (NEW_GAME_LOG_REGEX.match(line)):
             recording_data = RecordingData()
+
+            if data_output_file:
+                data_output_file.close()
+            
+            data_output_file = None
             continue
 
         match = TARGET_LOG_REGEX.match(line)
@@ -133,7 +138,7 @@ while True:
         recordings_dir = os.path.join(APP_DATA_DIRECTORY, "recordings")
         default_dir_name = f"{str(today).replace(':', '_').replace('.', '_')}_{str(recording_data.game_start_date)}"
         dir_name = None
-        prompt = "What would you like to name this recording? \nLleave blank or cancel to use default."
+        prompt = "What would you like to name this recording?\nLleave blank or cancel to use default."
         
         while dir_name == None:
             user_input = easygui.enterbox(prompt, "RecordEU4")
@@ -155,7 +160,7 @@ while True:
         data_file_path = os.path.join(recording_dir, "data.json")
         data_output_file = open(data_file_path, "w+", encoding="ansi")
 
-        log_verbose(f"Created JSON output as '{data_file_path}'.")
+        log_verbose(f"Created recording as '{data_file_path}'.")
 
         os.makedirs(os.path.join(recording_dir, "map"), exist_ok=True)
 
@@ -173,7 +178,7 @@ while True:
     data_output_file.write(orjson.dumps(json_dict).decode("ansi"))
     data_output_file.truncate()
 
-    log_verbose("Updated JSON output.")
+    log_verbose("Updated recording.")
 
     data_output_file.flush()
     script_log_file.flush()
