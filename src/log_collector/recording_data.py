@@ -1,7 +1,7 @@
 from datetime import date as datetime_date
 from dataclasses import dataclass
 
-class AnimationData:
+class RecordingData:
     def __init__(self):
         self.game_start_date: datetime_date = None
         self.initial_provinces: dict[str, Province] = {}

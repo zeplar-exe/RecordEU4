@@ -1,6 +1,6 @@
 namespace = anim_detection_events
 
-# detect province stuff
+# Province under siege?
 province_event = {
     id = anim_detection_events.1
     hidden = yes
@@ -25,11 +25,11 @@ province_event = {
         }
 
         export_to_variable = {
-            which = anim_garrison
+            which = rec_garrison
             value = trigger_value:garrison
         }
 
-        log = "ANIMATED_REPLAY on_province_siege_progress||[Root.prov_id.GetValue]||[This.anim_garrison.GetValue]||[This.GetTag]"
+        log = "ANIMATED_REPLAY on_province_siege_progress||[Root.prov_id.GetValue]||[This.rec_garrison.GetValue]||[This.GetTag]"
     }
 }
 
