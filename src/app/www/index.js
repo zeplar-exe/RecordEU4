@@ -1,15 +1,16 @@
-async function loadReplayList() {
-    let replays = await ipcRenderer.invoke("replays.getReplayList")
-    replays.forEach(replay => {
-        let list = $("#replay-list")
+async function loadRecordingList() {
+    let recordings = await ipcRenderer.invoke("recordings.getRecordingList")
+
+    recordings.forEach(recording => {
+        let list = $("#recording-list")
 
         listItem = document.createElement("li")
         button = document.createElement("button")
-        button.innerText = replay
+        button.innerText = recording
         button.onclick = async () => {
             let canvas = $("#map-canvas")[0]
             let canvasCtx = canvas.getContext("2d")
-            let bitmap = await ipcRenderer.invoke("replays.getReplayBitmap", replay)
+            let bitmap = await ipcRenderer.invoke("recordings.getRecordingBitmap", recording)
 
             let imageData = new ImageData(bitmap["bitmap"], bitmap["width"])
 
@@ -25,10 +26,4 @@ async function loadReplayList() {
 
         list.append(listItem)
     })
-}
-
-async function replay_selected(replay) {
-    
-
-    
 }

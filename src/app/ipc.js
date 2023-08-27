@@ -6,26 +6,26 @@ const getAppDataPath = require("appdata-path");
 const Jimp = require('jimp');
 
 let appDataPath = getAppDataPath("RecordEU4")
-let replaysDir = path.join(appDataPath, "replays")
+let recordingsDir = path.join(appDataPath, "recordings")
 
-let currentReplay = undefined
+let currentRecording = undefined
 
-ipcMain.handle("replays.getReplayList", async (event, ...args) => {
-    return await readdir(replaysDir)
+ipcMain.handle("recordings.getRecordingList", async (event, ...args) => {
+    return await readdir(recordingsDir)
 })
 
-ipcMain.handle("replays.getReplayBitmap", async (event, ...args) => {
+ipcMain.handle("recordings.getRecordingBitmap", async (event, ...args) => {
     function createColorKey(r, g, b, a) {
         return `${r}_${g}_${b}_${a}`
     }
 
     let csvParser = csv.createParser(";")
-    let replayDir = path.join(replaysDir, args[0])
-    let dataJson = JSON.parse((await readFile(path.join(replayDir, "data.json"))).toString())
-    let provinceBitmap = await Jimp.read(path.join(replayDir, "map/provinces.bmp"))
-    let definitionCsv = csvParser.parse(await readFile(path.join(replayDir, "map/definition.csv")))
+    let recordingDir = path.join(recordingsDir, args[0])
+    let dataJson = JSON.parse((await readFile(path.join(recordingDir, "data.json"))).toString())
+    let provinceBitmap = await Jimp.read(path.join(recordingDir, "map/provinces.bmp"))
+    let definitionCsv = csvParser.parse(await readFile(path.join(recordingDir, "map/definition.csv")))
 
-    currentReplay = dataJson
+    currentRecording = dataJson
     
     let definitions = new Map()
 
@@ -57,7 +57,7 @@ ipcMain.handle("replays.getReplayBitmap", async (event, ...args) => {
             continue
 
         let province_id = definition["id"]
-        let province = currentReplay["initial_provinces"][province_id]
+        let province = currentRecording["initial_provinces"][province_id]
 
         if (!province)
             continue
@@ -70,7 +70,7 @@ ipcMain.handle("replays.getReplayBitmap", async (event, ...args) => {
             continue
         }
 
-        let countryColor = currentReplay["countries"][country]["color"]
+        let countryColor = currentRecording["countries"][country]["color"]
 
         provinceBitmapArray[i] = countryColor[0]
         provinceBitmapArray[i+1] = countryColor[1]
@@ -81,8 +81,8 @@ ipcMain.handle("replays.getReplayBitmap", async (event, ...args) => {
     return { bitmap: provinceBitmapArray, width: provinceBitmap.bitmap.width, height: provinceBitmap.bitmap.height }
 })
 
-ipcMain.handle("replays.getEventsOnDate", async (event, ...args) => {
+ipcMain.handle("recordings.getEventsOnDate", async (event, ...args) => {
     let date = args[0]
 
-    return currentReplay["events"][step]
+    return []
 })

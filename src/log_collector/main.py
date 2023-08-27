@@ -15,7 +15,7 @@ import platformdirs
 
 LOG_EVENT_ARGUMENT_SEPERATOR = "||"
 TARGET_LOG_REGEX = re.compile(
-    f"\[effectimplementation\.cpp:\d+\]: EVENT \[(\d+\.\d+\.\d+)\]:ANIMATED_REPLAY ([-'\w {re.escape(LOG_EVENT_ARGUMENT_SEPERATOR)}]+)")
+    f"\[effectimplementation\.cpp:\d+\]: EVENT \[(\d+\.\d+\.\d+)\]:RECORD_EU4 ([-'\w {re.escape(LOG_EVENT_ARGUMENT_SEPERATOR)}]+)")
 
 today = datetime.today()
 
@@ -44,7 +44,7 @@ def log_verbose(message):
     print(message)
     script_log_file.write(message + "\n")
 
-log(f"Running AnimatedReplay (PID {os.getpid()})")
+log(f"Running RecordEU4 (PID {os.getpid()})")
 script_log_file.flush()
 
 
@@ -118,19 +118,19 @@ while True:
 
     if data_output_file is None:
         dir_name = f"{str(today).replace(':', '_').replace('.', '_')}_{str(recording_data.game_start_date)}"
-        replay_dir = os.path.join(APP_DATA_DIRECTORY, "replays", dir_name)
+        recording_dir = os.path.join(APP_DATA_DIRECTORY, "recordings", dir_name)
 
-        os.makedirs(replay_dir, exist_ok=True)
+        os.makedirs(recording_dir, exist_ok=True)
 
-        data_file_path = os.path.join(replay_dir, "data.json")
+        data_file_path = os.path.join(recording_dir, "data.json")
         data_output_file = open(data_file_path, "w+", encoding="ansi")
 
         log_verbose(f"Created JSON output as '{data_file_path}'.")
 
-        os.makedirs(os.path.join(replay_dir, "map"), exist_ok=True)
+        os.makedirs(os.path.join(recording_dir, "map"), exist_ok=True)
 
-        shutil.copy(os.path.join(EU4_GAME_DIRECTORY, "map/provinces.bmp"), os.path.join(replay_dir, "map/provinces.bmp"))
-        shutil.copy(os.path.join(EU4_GAME_DIRECTORY, "map/definition.csv"), os.path.join(replay_dir, "map/definition.csv"))
+        shutil.copy(os.path.join(EU4_GAME_DIRECTORY, "map/provinces.bmp"), os.path.join(recording_dir, "map/provinces.bmp"))
+        shutil.copy(os.path.join(EU4_GAME_DIRECTORY, "map/definition.csv"), os.path.join(recording_dir, "map/definition.csv"))
 
     json_dict = {
         "game_start_date": str(recording_data.game_start_date),

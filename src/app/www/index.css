@@ -10,12 +10,12 @@ body {
 }
 
 
-#replay-list-view {
+#recording-list-view {
     width: 25%;
     border-right: 1px solid black;
 }
 
-#replay-list {
+#recording-list {
     list-style: none;
 }
 

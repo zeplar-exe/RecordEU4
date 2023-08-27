@@ -1,7 +1,7 @@
 # https://eu4.paradoxwikis.com/On_Actions
 
 on_startup = {
-    log = "ANIMATED_REPLAY on_startup||[Root.GetTag]"
+    log = "RECORD_EU4 on_startup||[Root.GetTag]"
 
     if = {
         limit = {
@@ -11,7 +11,7 @@ on_startup = {
         set_prov_vars = yes
 
         every_province = {
-            log = "ANIMATED_REPLAY startup_province||[This.prov_id.GetValue]||[This.GetName]"
+            log = "RECORD_EU4 startup_province||[This.prov_id.GetValue]||[This.GetName]"
         }
 
         set_global_flag = read_prov_id
@@ -19,12 +19,12 @@ on_startup = {
 # In all, the issue is that the definition.csv file is absolutely fucked and horribly inconsistent. Thus, the only remaining solution is to use province IDs. How, you ask? I don't fucking know, and nobody else has ever done this in the history of the fucking world I guess.
 # Update: we got it working, fuck this pile of shit.
     every_owned_province = {
-        log = "ANIMATED_REPLAY startup_province_ownership||[This.prov_id.GetValue]||[Prev.GetTag]"
+        log = "RECORD_EU4 startup_province_ownership||[This.prov_id.GetValue]||[Prev.GetTag]"
 
         if = {
             limit = { NOT = { controls = This } }
 
-            log = "ANIMATED_REPLAY startup_province_ownership||[This.prov_id.GetValue]||[Prev.GetTag]"
+            log = "RECORD_EU4 startup_province_ownership||[This.prov_id.GetValue]||[Prev.GetTag]"
         }
     }
 
@@ -35,37 +35,37 @@ on_startup = {
 }
 
 on_siege_won_country = {
-    log = "ANIMATED_REPLAY on_siege_won_country||[Root.GetTag]||[From.prov_id.GetValue]"
+    log = "RECORD_EU4 on_siege_won_country||[Root.GetTag]||[From.prov_id.GetValue]"
 }
 
 on_abandon_colony = {
-    log = "ANIMATED_REPLAY on_abandon_colony||[Root.GetName]||[This.prov_id.GetValue]"
+    log = "RECORD_EU4 on_abandon_colony||[Root.GetName]||[This.prov_id.GetValue]"
 }
 
 on_province_owner_change = {
-    log = "ANIMATED_REPLAY on_province_owner_change||[Root.prov_id.GetValue]||[Root.Owner.GetTag]||[From.GetTag]"
+    log = "RECORD_EU4 on_province_owner_change||[Root.prov_id.GetValue]||[Root.Owner.GetTag]||[From.GetTag]"
 }
 
 on_create_vassal = {
-    log = "ANIMATED_REPLAY on_create_vassal||[Root.GetTag]||[From.GetTag]"
+    log = "RECORD_EU4 on_create_vassal||[Root.GetTag]||[From.GetTag]"
 }
 
 on_create_client_state = {
-    log = "ANIMATED_REPLAY on_create_client_state||[This.GetTag]||[From.GetTag]"
+    log = "RECORD_EU4 on_create_client_state||[This.GetTag]||[From.GetTag]"
 }
 
 on_dependency_gained = {
-    log = "ANIMATED_REPLAY on_dependency_gained||[Root.GetTag]||[From.GetTag]
+    log = "RECORD_EU4 on_dependency_gained||[Root.GetTag]||[From.GetTag]
 }
 
 on_dependency_lost = {
-    log = "ANIMATED_REPLAY on_dependency_lost||[Root.GetTag]||[From.GetTag]
+    log = "RECORD_EU4 on_dependency_lost||[Root.GetTag]||[From.GetTag]
 }
 
 on_war_won = {
-    log = "ANIMATED_REPLAY on_war_won||[Root.GetTag]||[From.GetTag]"
+    log = "RECORD_EU4 on_war_won||[Root.GetTag]||[From.GetTag]"
 }
 
 on_war_lost = {
-    log = "ANIMATED_REPLAY on_war_lost||[Root.GetTag]||[From.GetTag]"
+    log = "RECORD_EU4 on_war_lost||[Root.GetTag]||[From.GetTag]"
 }

@@ -29,7 +29,7 @@ province_event = {
             value = trigger_value:garrison
         }
 
-        log = "ANIMATED_REPLAY on_province_siege_progress||[Root.prov_id.GetValue]||[This.rec_garrison.GetValue]||[This.GetTag]"
+        log = "RECORD_EU4 on_province_siege_progress||[Root.prov_id.GetValue]||[This.rec_garrison.GetValue]||[This.GetTag]"
     }
 }
 
@@ -51,6 +51,6 @@ country_event = {
     }
 
     every_enemy_country = {
-        log = "ANIMATED_REPLAY on_war_progress||[Root.GetTag]||[This.GetTag]"
+        log = "RECORD_EU4 on_war_progress||[Root.GetTag]||[This.GetTag]"
     }
 }
