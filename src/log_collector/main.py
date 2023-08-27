@@ -10,12 +10,15 @@ import event_handlers
 from config import *
 from recording_data import *
 from eu4_parse import *
+from util import *
 
 import platformdirs
+import easygui
 
 LOG_EVENT_ARGUMENT_SEPERATOR = "||"
 TARGET_LOG_REGEX = re.compile(
     f"\[effectimplementation\.cpp:\d+\]: EVENT \[(\d+\.\d+\.\d+)\]:RECORD_EU4 ([-'\w {re.escape(LOG_EVENT_ARGUMENT_SEPERATOR)}]+)")
+NEW_GAME_LOG_REGEX = re.compile("\[\[ Launching \w+-game \]\]")
 
 today = datetime.today()
 
@@ -85,8 +88,13 @@ log_verbose("Completed country data read.")
 
 while True:
     time.sleep(READ_GAME_EVENTS_DELAY_MS / 1000)
+    count = 0
 
     for line in eu4_log_file.readlines():
+        if (NEW_GAME_LOG_REGEX.match(line)):
+            recording_data = RecordingData()
+            continue
+
         match = TARGET_LOG_REGEX.match(line)
 
         if not match: 
@@ -112,13 +120,35 @@ while True:
             handler(date, recording_data, args)
         except AttributeError:
             log(f"Handler for event '{event}' not found.")
+            continue
+        
+        count += 1
+        if count % LINE_READ_LOG_INTERVAL == 0:
+            log_verbose(f"Progress: {count} lines read on current iteration.")
 
     if recording_data.game_start_date is None:
         continue
 
     if data_output_file is None:
-        dir_name = f"{str(today).replace(':', '_').replace('.', '_')}_{str(recording_data.game_start_date)}"
-        recording_dir = os.path.join(APP_DATA_DIRECTORY, "recordings", dir_name)
+        recordings_dir = os.path.join(APP_DATA_DIRECTORY, "recordings")
+        default_dir_name = f"{str(today).replace(':', '_').replace('.', '_')}_{str(recording_data.game_start_date)}"
+        dir_name = None
+        prompt = "What would you like to name this recording? \nLleave blank or cancel to use default."
+        
+        while dir_name == None:
+            user_input = easygui.enterbox(prompt, "RecordEU4")
+            
+            if user_input is None or user_input == "" or user_input.isspace(): # Cancellation or Blank or Spaces
+                dir_name = default_dir_name
+            else:
+                if not is_pathname_valid(user_input):
+                    prompt = "Invalid path, try again."
+                elif os.path.exists(os.path.join(recordings_dir, user_input)):
+                    prompt = f"{user_input} already exists, try again."
+                else:
+                    dir_name = user_input
+        
+        recording_dir = os.path.join(recordings_dir, dir_name)
 
         os.makedirs(recording_dir, exist_ok=True)
 
