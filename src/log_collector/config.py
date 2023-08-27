@@ -22,4 +22,3 @@ LINE_READ_LOG_INTERVAL = 100 # Requires verbose output
 # Advanced (more like technical stuff that doesn't really need to be configurable)
 
 READ_GAME_EVENTS_DELAY_MS = 20000
-APP_DATA_DIRECTORY = os.path.join(platformdirs.user_data_dir(roaming=True, ensure_exists=True), "RecordEU4")

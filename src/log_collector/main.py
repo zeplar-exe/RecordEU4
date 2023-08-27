@@ -15,6 +15,8 @@ from util import *
 import platformdirs
 import easygui
 
+APP_DATA_DIRECTORY = os.path.join(platformdirs.user_data_dir(roaming=True, ensure_exists=True), "RecordEU4")
+
 LOG_EVENT_ARGUMENT_SEPERATOR = "||"
 TARGET_LOG_REGEX = re.compile(
     f"\[effectimplementation\.cpp:\d+\]: EVENT \[(\d+\.\d+\.\d+)\]:RECORD_EU4 ([-'\w {re.escape(LOG_EVENT_ARGUMENT_SEPERATOR)}]+)")

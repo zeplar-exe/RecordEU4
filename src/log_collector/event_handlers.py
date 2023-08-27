@@ -8,8 +8,6 @@ def on_startup(date: datetime_date, recording_data: RecordingData, args: list):
     
     recording_data.game_start_date = date
 
-
-
 def startup_province(date: datetime_date, recording_data: RecordingData, args: list):
     province_id = args[0]
     province_name = args[1]
