@@ -61,11 +61,11 @@ on_create_client_state = {
 }
 
 on_dependency_gained = {
-    log = "RECORD_EU4 on_dependency_gained||[Root.GetTag]||[From.GetTag]
+    log = "RECORD_EU4 on_dependency_gained||[Root.GetTag]||[From.GetTag]"
 }
 
 on_dependency_lost = {
-    log = "RECORD_EU4 on_dependency_lost||[Root.GetTag]||[From.GetTag]
+    log = "RECORD_EU4 on_dependency_lost||[Root.GetTag]||[From.GetTag]"
 }
 
 on_war_won = {

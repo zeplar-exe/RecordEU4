@@ -1,16 +1,14 @@
 {
   "name": "app",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "main": "main/index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test": "jest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "electron": "^22.0.0"
+    "electron": "^22.0.0",
+    "jest": "^29.6.4"
   },
   "dependencies": {
     "@jimp/bmp": "^0.22.10",

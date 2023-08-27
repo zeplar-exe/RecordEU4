@@ -1,20 +1,16 @@
-<html>
+<html lang="en">
     <head>
         <title>Record EU4</title>
 
-        <link rel="stylesheet" href="index.css">
-        <link rel="stylesheet" href="common.css">
+        <link rel="stylesheet" href="./index.css">
+        <link rel="stylesheet" href="./common.css">
     </head>
 
     <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 
-    <script src="index.js"></script>
+    <script src="./index.js"></script>
     <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-
-    <script>
-        const { ipcRenderer } = require("electron");
-    </script>
 
     <body>
         <div id="recording-list-view">
@@ -30,7 +26,15 @@
         </div>
 
         <div id="hud">
-            https://stackoverflow.com/questions/3616572/how-to-position-a-div-in-bottom-right-corner-of-a-browser
+            <div id="time">
+                <div id="time-display"></div>
+                <div id="time-control">
+                    <button onclick="stepBackward()">SB</button>
+                    <button onclick="pausePlay()">PP</button>
+                    <button onclick="stepForward()">SF</button>
+                </div>
+            </div>
+
         </div>
 
         <script>
@@ -39,7 +43,7 @@
             mapPanzoom = Panzoom(mapCanvas, {
                 maxScale: 4,
                 bounds: true,
-                boundsPadding: 1
+                boundsPadding: 0.1
             });
 
             mapCanvas.parentElement.addEventListener('wheel', mapPanzoom.zoomWithWheel)

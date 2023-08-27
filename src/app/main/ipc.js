@@ -1,14 +1,14 @@
-import { ipcMain } from "electron";
-
-import { readdir, readFile } from "fs/promises";
-
-import path from "path";
-import csv from "node-csv";
-import getAppDataPath from "appdata-path";
-import Jimp from "jimp";
-import { existsSync } from "fs";
-
-import { Recording } from "./recording.js";
+const { ipcMain } = require('electron')
+const { readdir, readFile } = require("fs/promises")
+const path = require("path");
+const fs = require("fs")
+const csv = require("node-csv")
+const getAppDataPath = require("appdata-path");
+const Jimp = require('jimp');
+const Recording = require("./recording")
+const { addDays, createColorKey } = require("./util")
+const { editImageDataBitmap, floodFill } = require("./bitmap-util");
+const Color = require("./color");
 
 let appDataPath = getAppDataPath("RecordEU4")
 let recordingsDir = path.join(appDataPath, "recordings")
@@ -16,7 +16,7 @@ let recordingsDir = path.join(appDataPath, "recordings")
 let currentRecording = undefined
 
 ipcMain.handle("recordings.getRecordingList", async (event) => {
-    if (!existsSync(recordingsDir))
+    if (!fs.existsSync(recordingsDir))
         return []
 
     return await readdir(recordingsDir)
@@ -29,11 +29,11 @@ ipcMain.handle("recordings.newSession", async (event, recordingName) => {
     currentRecording = new Recording(recordingName, recordingDir, recordingData)
 })
 
-ipcMain.handle("recording.getInitialBitmap", async (event) => {
-    function createColorKey(r, g, b, a) {
-        return `${r}_${g}_${b}_${a}`
-    }
+ipcMain.handle("recording.getInitialDate", async (event) => {
+    return new Date(currentRecording.data.game_start_date)
+})
 
+ipcMain.handle("recording.getInitialBitmap", async (event) => {
     let csvParser = csv.createParser(";")
     let provinceBitmap = await Jimp.read(path.join(currentRecording.directory, "map/provinces.bmp"))
     let definitionCsv = csvParser.parse(await readFile(path.join(currentRecording.directory, "map/definition.csv")))
@@ -47,7 +47,7 @@ ipcMain.handle("recording.getInitialBitmap", async (event) => {
     })
 
     let provinceBitmapArray = new Uint8ClampedArray(provinceBitmap.bitmap.data)
-    
+
     for (let i = 0; i < provinceBitmapArray.length; i += 4) {
         // Some of the most retarded bullshit possible.
         let r = provinceBitmapArray[i+1]
@@ -73,7 +73,7 @@ ipcMain.handle("recording.getInitialBitmap", async (event) => {
         if (!province)
             continue
 
-        currentRecording.mapProvince(province, i)
+        currentRecording.mapProvincePixelIndex(province.id, i / 4)
 
         let country = province["owner"]
 
@@ -91,32 +91,48 @@ ipcMain.handle("recording.getInitialBitmap", async (event) => {
         provinceBitmapArray[i+3] = 255
     }
 
-    return { bitmap: provinceBitmapArray, width: provinceBitmap.bitmap.width, height: provinceBitmap.bitmap.height }
+    return { data: provinceBitmapArray, width: provinceBitmap.bitmap.width, height: provinceBitmap.bitmap.height }
 })
 
-ipcMain.handle("recording.getEventsOnDate", async (event, ...args) => {
-    let date = args[0]
-    let events = []
+ipcMain.handle("recording.updateBitmapOnDate", async (event, date, bitmap, bitmapWidth, bitmapHeight) => {
     let index = 0
 
     while (index < currentRecording.data.events.length) {
         let recordingEvent = currentRecording.data.events[index]
+        let eventDate = new Date(recordingEvent.date)
 
-        if (date.getTime() === new Date(recordingEvent).getTime())
+        if (date.getTime() === eventDate.getTime())
             break
-    }
 
-    do {
-        let recordingEvent = currentRecording.data.events[index]
-
-        if (recordingEvent.date.getTime() === date.getTime()) {
-            events.push(recordingEvent)
-        } else {
-            break
-        }
+        if (date.getTime() < eventDate.getTime())
+            return false
 
         index++
-    } while (index < currentRecording.data.events.length);
+    }
 
-    return events
+    return editImageDataBitmap(bitmap, bitmapWidth, (bitmap32) => {
+        while (index < currentRecording.data.events.length) {
+            let recordingEvent = currentRecording.data.events[index]
+            let eventDate = new Date(recordingEvent.date)
+
+            if (eventDate.getTime() === date.getTime()) {
+                switch (recordingEvent.type) {
+                    case "province_occupied":
+                        let pixelIndex = currentRecording.getProvincePixelIndex(recordingEvent.province)
+                        let occupier = recordingEvent.occupier
+                        let fillColor = new Color(...currentRecording.data.countries[occupier].color)
+                        let x = pixelIndex % bitmapWidth
+                        let y = Math.floor(pixelIndex / bitmapWidth)
+
+                        floodFill(bitmap32, bitmapWidth, bitmapHeight, x, y, fillColor)
+
+                        break
+                }
+            } else {
+                break
+            }
+
+            index++
+        }
+    })
 })
