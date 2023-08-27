@@ -10,11 +10,17 @@ on_startup = {
 
         set_prov_vars = yes
 
+        set_global_flag = read_prov_id
+    }
+
+    if = {
+        limit = {
+            tag = REB # Rebels always exist, no? And they're always first, right??
+        }
+
         every_province = {
             log = "RECORD_EU4 startup_province||[This.prov_id.GetValue]||[This.GetName]"
         }
-
-        set_global_flag = read_prov_id
     }
 # In all, the issue is that the definition.csv file is absolutely fucked and horribly inconsistent. Thus, the only remaining solution is to use province IDs. How, you ask? I don't fucking know, and nobody else has ever done this in the history of the fucking world I guess.
 # Update: we got it working, fuck this pile of shit.
@@ -64,8 +70,4 @@ on_dependency_lost = {
 
 on_war_won = {
     log = "RECORD_EU4 on_war_won||[Root.GetTag]||[From.GetTag]"
-}
-
-on_war_lost = {
-    log = "RECORD_EU4 on_war_lost||[Root.GetTag]||[From.GetTag]"
 }
