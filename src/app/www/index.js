@@ -8,9 +8,11 @@ async function loadRecordingList() {
         button = document.createElement("button")
         button.innerText = recording
         button.onclick = async () => {
+            await ipcRenderer.invoke("recordings.newSession", recording)
+
             let canvas = $("#map-canvas")[0]
             let canvasCtx = canvas.getContext("2d")
-            let bitmap = await ipcRenderer.invoke("recordings.getRecordingBitmap", recording)
+            let bitmap = await ipcRenderer.invoke("recording.getInitialBitmap")
 
             let imageData = new ImageData(bitmap["bitmap"], bitmap["width"])
 

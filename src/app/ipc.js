@@ -8,24 +8,29 @@ const Jimp = require('jimp');
 let appDataPath = getAppDataPath("RecordEU4")
 let recordingsDir = path.join(appDataPath, "recordings")
 
+let currentRecordingName = undefined
 let currentRecording = undefined
 
-ipcMain.handle("recordings.getRecordingList", async (event, ...args) => {
+ipcMain.handle("recordings.getRecordingList", async (event) => {
     return await readdir(recordingsDir)
 })
 
-ipcMain.handle("recordings.getRecordingBitmap", async (event, ...args) => {
+ipcMain.handle("recordings.newSession", async (event, recordingName) => {
+    let recordingDir = path.join(recordingsDir, currentRecordingName)
+
+    currentRecordingName = recordingName
+    currentRecording = JSON.parse((await readFile(path.join(recordingDir, "data.json"))).toString())
+})
+
+ipcMain.handle("recording.getInitialBitmap", async (event) => {
     function createColorKey(r, g, b, a) {
         return `${r}_${g}_${b}_${a}`
     }
 
     let csvParser = csv.createParser(";")
-    let recordingDir = path.join(recordingsDir, args[0])
-    let dataJson = JSON.parse((await readFile(path.join(recordingDir, "data.json"))).toString())
+    let recordingDir = path.join(recordingsDir, currentRecordingName)
     let provinceBitmap = await Jimp.read(path.join(recordingDir, "map/provinces.bmp"))
     let definitionCsv = csvParser.parse(await readFile(path.join(recordingDir, "map/definition.csv")))
-
-    currentRecording = dataJson
     
     let definitions = new Map()
 
@@ -81,7 +86,7 @@ ipcMain.handle("recordings.getRecordingBitmap", async (event, ...args) => {
     return { bitmap: provinceBitmapArray, width: provinceBitmap.bitmap.width, height: provinceBitmap.bitmap.height }
 })
 
-ipcMain.handle("recordings.getEventsOnDate", async (event, ...args) => {
+ipcMain.handle("recording.getEventsOnDate", async (event, ...args) => {
     let date = args[0]
 
     return []
