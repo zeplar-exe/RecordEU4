@@ -1,0 +1,77 @@
+{
+    "start_game_date": "[date]", (as a string: yyyy-mm-dd),
+    "initial_provinces": {
+        "[province_id]" {
+            "id": "[province_id]",
+            "name": "[province_name]",
+            "owner": "[province_owner_tag]",
+            "occupier": "[province_occupier_tag]"
+        }
+        ...
+    },
+    "countries": {
+        "[country_tag]": {
+            "tag": "[country_tag]",
+            "color": [ [r_int] [g_int] [b_int] ]
+        }
+        ...
+    },
+    "events": [
+        {
+            "type": "[event_type]",
+            "date": "[date]", (as a string: yyyy-mm-dd)
+            [event_type_specific_properties]
+        }
+    ]
+}
+
+Event Types:
+
+{
+    "type": "province_occupied",
+    "date": "[date]", (as a string: yyyy-mm-dd),
+    "province": "[province_id]",
+    "occupier": "[occupier_tag]"
+}
+
+{
+    "type": "province_owner_changed",
+    "date": "[date]", (as a string: yyyy-mm-dd),
+    "province": "[province_id]",
+    "new_owner": "[new_owner_tag]",
+    "old_owner": "[old_owner_tag]"
+}
+
+{
+    "type": "siege_progress",
+    "date": "[date]", (as a string: yyyy-mm-dd),
+    "province": "[province_id]",
+    "sieger": "[sieger_tag]"
+}
+
+{
+    "type": "province_abandoned",
+    "date": "[date]", (as a string: yyyy-mm-dd),
+    "province": "[province_id]"
+}
+
+{
+    "type": "dependency_gained",
+    "date": "[date]", (as a string: yyyy-mm-dd),
+    "overlord": "[overlord_tag]",
+    "subject": "[subject_tag]"
+}
+
+{
+    "type": "dependency_lost",
+    "date": "[date]", (as a string: yyyy-mm-dd),
+    "overlord": "[overlord_tag]",
+    "subject": "[subject_tag]"
+}
+
+{
+    "type": "war_won",
+    "date": "[date]", (as a string: yyyy-mm-dd),
+    "winner": "[winner_tag]",
+    "loser": "[loser_tag]"
+}
