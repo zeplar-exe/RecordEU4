@@ -35,7 +35,7 @@ province_event = {
 
 # Currently at war?
 country_event = {
-    id = anim_detection_events.1
+    id = anim_detection_events.2
     hidden = yes
 
     trigger = {
