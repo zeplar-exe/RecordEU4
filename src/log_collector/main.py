@@ -20,19 +20,8 @@ APP_DATA_DIRECTORY = os.path.join(platformdirs.user_data_dir(roaming=True, ensur
 LOG_EVENT_ARGUMENT_SEPERATOR = "||"
 TARGET_LOG_REGEX = re.compile(
     f"\[effectimplementation\.cpp:\d+\]: EVENT \[(\d+\.\d+\.\d+)\]:RECORD_EU4 ([-'\w {re.escape(LOG_EVENT_ARGUMENT_SEPERATOR)}]+)")
-NEW_GAME_LOG_REGEX = re.compile("\[\[ Launching \w+-game \]\]")
-
-today = datetime.today()
 
 script_log_file = open("record_eu4.log.txt", "a+")
-
-input_log_file = sys.argv[1:2] or None
-eu4_log_file = None
-
-if input_log_file == None:
-    eu4_log_file = open(os.path.join(EU4_DOCUMENTS_DIRECTORY, "logs/game.log"), "r")
-else:
-    eu4_log_file = open(input_log_file[0])
 
 def log(message):
     global script_log_file
@@ -52,54 +41,49 @@ def log_verbose(message):
 log(f"Running RecordEU4 (PID {os.getpid()})")
 script_log_file.flush()
 
-
+eu4_log_file = None
 recording_data = RecordingData()
 data_output_file = None
+line_read_count = 0
+last_file_length = 0
 
+def init_state():
+    global eu4_log_file, recording_data, data_output_file, line_read_count, last_file_length
 
-country_target_file_path_re = re.compile("\"(.*)\"")
+    if eu4_log_file:
+        eu4_log_file.close()
 
-for country_tag_file in glob.iglob(os.path.join(EU4_GAME_DIRECTORY, "common/country_tags/**/*.txt"), recursive=True):
-    with open(country_tag_file) as tag_file:
-        for definition in get_definitions(tag_file):
-            tag = definition[0]
-            target_file_path = definition[1]
-            match = country_target_file_path_re.match(target_file_path)
+    input_log_file = sys.argv[1:2] or None
 
-            if not match:
-                continue
+    if input_log_file == None:
+        eu4_log_file = open(os.path.join(EU4_DOCUMENTS_DIRECTORY, "logs/game.log"), "r")
+    else:
+        eu4_log_file = open(input_log_file[0])
 
-            target_file_path = match.group(1)
+    recording_data = RecordingData()
 
-            if not os.path.isabs(target_file_path):
-                target_file_path = os.path.join(EU4_GAME_DIRECTORY, "common", target_file_path)
+    if data_output_file:
+        data_output_file.close()
 
-            color = []
+    data_output_file = None
+    line_read_count = 0
+    last_file_length = 0
 
-            with open(target_file_path) as target_file:
-                for definition in get_definitions(target_file):
-                    if definition[0] == "color":
-                        color = list(map(int, definition[1].replace("{", "").replace("}", "").strip().split()))
-                        break
-            
-            country = Country(tag, color)
-            recording_data.countries[tag] = country
+    country_definitions = get_country_definitions()
 
-log_verbose("Completed country data read.")
+    for definition in country_definitions:
+        recording_data.countries[definition.tag] = definition
 
+    log_verbose("Completed country data read.")
+
+init_state()
 
 while True:
     time.sleep(READ_GAME_EVENTS_DELAY_MS / 1000)
-    count = 0
 
     for line in eu4_log_file.readlines():
-        if (NEW_GAME_LOG_REGEX.match(line)):
-            recording_data = RecordingData()
-
-            if data_output_file:
-                data_output_file.close()
-            
-            data_output_file = None
+        if last_file_length > os.path.getsize(eu4_log_file.name):
+            init_state()
             continue
 
         match = TARGET_LOG_REGEX.match(line)
@@ -119,8 +103,6 @@ while True:
         event = arguments[0]
         args = arguments[1:]
 
-        handler = None
-
         try:
             handler = getattr(event_handlers, event)
 
@@ -129,16 +111,16 @@ while True:
             log(f"Handler for event '{event}' not found.")
             continue
         
-        count += 1
-        if count % LINE_READ_LOG_INTERVAL == 0:
-            log_verbose(f"Progress: {count} lines read on current iteration.")
+        line_read_count += 1
+        if line_read_count % LINE_READ_LOG_INTERVAL == 0:
+            log_verbose(f"Progress: {line_read_count} lines read on current iteration.")
 
     if recording_data.game_start_date is None:
         continue
 
     if data_output_file is None:
         recordings_dir = os.path.join(APP_DATA_DIRECTORY, "recordings")
-        default_dir_name = f"{str(today).replace(':', '_').replace('.', '_')}_{str(recording_data.game_start_date)}"
+        default_dir_name = f"{str(datetime.today()).replace(':', '_').replace('.', '_')}_{str(recording_data.game_start_date)}"
         dir_name = None
         prompt = "What would you like to name this recording?\nLleave blank or cancel to use default."
         
