@@ -1,4 +1,4 @@
-const { floodFill, color32FromArray } = require("../main/bitmap-util")
+const { floodFill } = require("../main/bitmap-util")
 const Color = require("../main/color");
 
 test("flood fill works", () => {

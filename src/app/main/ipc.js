@@ -27,6 +27,10 @@ ipcMain.handle("recordings.newSession", async (event, recordingName) => {
     let recordingData = JSON.parse((await readFile(path.join(recordingDir, "data.json"))).toString())
 
     currentRecording = new Recording(recordingName, recordingDir, recordingData)
+
+    currentRecording.data.events.forEach((event) => {
+        event["date"] = new Date(event["date"])
+    })
 })
 
 ipcMain.handle("recording.getInitialDate", async (event) => {
@@ -49,7 +53,6 @@ ipcMain.handle("recording.getInitialBitmap", async (event) => {
     let provinceBitmapArray = new Uint8ClampedArray(provinceBitmap.bitmap.data)
 
     for (let i = 0; i < provinceBitmapArray.length; i += 4) {
-        // Some of the most retarded bullshit possible.
         let r = provinceBitmapArray[i+1]
         let g = provinceBitmapArray[i+2]
         let b = provinceBitmapArray[i]
@@ -94,45 +97,69 @@ ipcMain.handle("recording.getInitialBitmap", async (event) => {
     return { data: provinceBitmapArray, width: provinceBitmap.bitmap.width, height: provinceBitmap.bitmap.height }
 })
 
-ipcMain.handle("recording.updateBitmapOnDate", async (event, date, bitmap, bitmapWidth, bitmapHeight) => {
+ipcMain.handle("recoding.getEventsOnDate", async (event, date) => {
     let index = 0
 
     while (index < currentRecording.data.events.length) {
         let recordingEvent = currentRecording.data.events[index]
-        let eventDate = new Date(recordingEvent.date)
+        let eventDate = recordingEvent.date
 
         if (date.getTime() === eventDate.getTime())
             break
 
         if (date.getTime() < eventDate.getTime())
-            return false
+            return []
 
         index++
     }
 
-    return editImageDataBitmap(bitmap, bitmapWidth, (bitmap32) => {
-        while (index < currentRecording.data.events.length) {
-            let recordingEvent = currentRecording.data.events[index]
-            let eventDate = new Date(recordingEvent.date)
+    let results = []
 
-            if (eventDate.getTime() === date.getTime()) {
-                switch (recordingEvent.type) {
-                    case "province_occupied":
-                        let pixelIndex = currentRecording.getProvincePixelIndex(recordingEvent.province)
-                        let occupier = recordingEvent.occupier
-                        let fillColor = new Color(...currentRecording.data.countries[occupier].color)
-                        let x = pixelIndex % bitmapWidth
-                        let y = Math.floor(pixelIndex / bitmapWidth)
+    while (index < currentRecording.data.events.length) {
+        let recordingEvent = currentRecording.data.events[index]
+        let eventDate = new Date(recordingEvent.date)
 
-                        floodFill(bitmap32, bitmapWidth, bitmapHeight, x, y, fillColor)
-
-                        break
-                }
-            } else {
-                break
-            }
-
-            index++
+        if (eventDate.getTime() === date.getTime()) {
+            results.push(recordingEvent)
+        } else {
+            break
         }
+
+        index++
+    }
+
+    return results
+})
+
+ipcMain.handle("recording.applyEventsToBitmap", async (event, events, bitmap, bitmapWidth, bitmapHeight) => {
+    return editImageDataBitmap(bitmap, bitmapWidth, (bitmap32) => {
+        events.forEach((event) => {
+            switch (event.type) {
+                case "province_occupied": {
+                    let pixelIndices = currentRecording.getProvincePixelIndices(event.province)
+                    let occupier = event.occupier
+                    let country = currentRecording.data.countries[owner]
+                    let fillColor = country ? new Color(...country.color) : new Color(0, 0, 0, 0)
+
+                    pixelIndices.forEach((index) => {
+                        bitmap32[index] = fillColor.asUint32()
+                    })
+
+                    break
+                }
+                case "province_owner_changed": {
+                    let pixelIndices = currentRecording.getProvincePixelIndices(event.province)
+                    let owner = event.new_owner
+                    let country = currentRecording.data.countries[owner]
+                    let fillColor = country ? new Color(...country.color) : new Color(0, 0, 0, 0)
+
+                    pixelIndices.forEach((index) => {
+                        bitmap32[index] = fillColor.asUint32()
+                    })
+
+                    break
+                }
+            }
+        })
     })
 })

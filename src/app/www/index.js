@@ -5,9 +5,7 @@ const dateFormat = { year: "numeric", month: "numeric", day: "numeric", timeZone
 
 let currentDate = undefined
 let isPlaying = false
-// issue at hand: flood fill is greedy and doens't know where province borders are
-// resort to drawing borders on initial bitmap?
-    // if the user wants, they can disable borders and we try our best to fill them in
+
 function updateTimeDisplay() {
     $("#time-display").text(currentDate.toLocaleDateString("en-US", dateFormat))
 }
@@ -83,18 +81,29 @@ async function stepForward() {
 async function changeDate(date) {
     currentDate = date
 
+    updateTimeDisplay()
+
+    let events = await ipcRenderer.invoke("recoding.getEventsOnDate", currentDate)
+
+    if (events.length === 0)
+        return
+
     let canvas = $("#map-canvas")[0]
     let canvasCtx = canvas.getContext("2d", { willReadFrequently: true })
 
     let imageData = canvasCtx.getImageData(0, 0, canvas.width, canvas.height)
-    let newBitmap = await ipcRenderer.invoke("recording.updateBitmapOnDate", 
-        date, imageData.data, imageData.width, imageData.height)
+    let newBitmap = await ipcRenderer.invoke("recording.applyEventsToBitmap",
+        events, imageData.data, imageData.width, imageData.height)
 
-    if (newBitmap) {
-        imageData.data.set(newBitmap)
-
-        canvasCtx.putImageData(imageData, 0, 0)
-    }
-
-    updateTimeDisplay()
+    imageData.data.set(newBitmap)
+    canvasCtx.putImageData(imageData, 0, 0)
 }
+
+async function play() {
+    if (isPlaying)
+        await stepForward()
+
+    setTimeout(play, 1)//50)
+}
+
+play()

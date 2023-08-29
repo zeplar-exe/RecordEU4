@@ -6,12 +6,14 @@ module.exports = class Recording {
         this.province_map = {}
     }
 
-    mapProvincePixelIndex(province, bitmap_index) {
+    mapProvincePixelIndex(province, pixelIndex) {
         if (!this.province_map.hasOwnProperty(province))
-            this.province_map[province] = bitmap_index
+            this.province_map[province] = [pixelIndex]
+        else
+            this.province_map[province].push(pixelIndex)
     }
 
-    getProvincePixelIndex(province) {
+    getProvincePixelIndices(province) {
         return this.province_map[province]
     }
 }
