@@ -138,8 +138,11 @@ ipcMain.handle("recording.applyEventsToBitmap", async (event, events, bitmap, bi
                 case "province_occupied": {
                     let pixelIndices = currentRecording.getProvincePixelIndices(event.province)
                     let occupier = event.occupier
-                    let country = currentRecording.data.countries[owner]
+                    let country = currentRecording.data.countries[occupier]
                     let fillColor = country ? new Color(...country.color) : new Color(0, 0, 0, 0)
+
+                    if (!pixelIndices)
+                        break
 
                     pixelIndices.forEach((index) => {
                         bitmap32[index] = fillColor.asUint32()
@@ -152,6 +155,9 @@ ipcMain.handle("recording.applyEventsToBitmap", async (event, events, bitmap, bi
                     let owner = event.new_owner
                     let country = currentRecording.data.countries[owner]
                     let fillColor = country ? new Color(...country.color) : new Color(0, 0, 0, 0)
+
+                    if (!pixelIndices)
+                        break
 
                     pixelIndices.forEach((index) => {
                         bitmap32[index] = fillColor.asUint32()
