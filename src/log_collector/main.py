@@ -81,11 +81,13 @@ init_state()
 while True:
     time.sleep(READ_GAME_EVENTS_DELAY_MS / 1000)
 
-    for line in eu4_log_file.readlines():
-        if last_file_length > os.path.getsize(eu4_log_file.name):
-            init_state()
-            continue
+    if last_file_length > os.path.getsize(eu4_log_file.name):
+        init_state()
+        continue
 
+    last_file_length = os.path.getsize(eu4_log_file.name)
+
+    for line in eu4_log_file.readlines():
         match = TARGET_LOG_REGEX.match(line)
 
         if not match: 

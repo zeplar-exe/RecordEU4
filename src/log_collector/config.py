@@ -21,4 +21,4 @@ LINE_READ_LOG_INTERVAL = 100 # Requires verbose output
 
 # Advanced (more like technical stuff that doesn't really need to be configurable)
 
-READ_GAME_EVENTS_DELAY_MS = 2000
+READ_GAME_EVENTS_DELAY_MS = 4000
